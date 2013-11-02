@@ -15,8 +15,11 @@ class ConvertsRates
       from = rate.fetch(:from) { :NA }.to_sym
       to = rate.fetch(:to) { :NA }.to_sym
       conversion = rate.fetch(:conversion) { 1.0 }.to_f
-      {[from, to] => conversion}
-    end.reduce(:merge)
+      [
+        {[from, to] => conversion},
+        {[to, from] => (1.0 / conversion)}
+      ]
+    end.flatten.reduce(:merge)
   end
 
   def conversion(from, to)
