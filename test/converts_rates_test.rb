@@ -16,4 +16,9 @@ class ConvertsRatesTest < Minitest::Spec
     converted.must_equal BigDecimal('0.857')
   end
 
+  test "handles missing conversions" do
+    converter = ConvertsRates.new(rates: [])
+    converter.convert(1.2, :FOO, :BAR).must_equal :no_conversion
+  end
+
 end
