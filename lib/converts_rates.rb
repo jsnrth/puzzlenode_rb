@@ -1,3 +1,6 @@
+require 'bigdecimal'
+require 'bigdecimal/util'
+
 class ConvertsRates
 
   def initialize(config = {})
@@ -5,7 +8,7 @@ class ConvertsRates
   end
 
   def convert(amount, from, to)
-    amount * conversion(from, to)
+    amount.to_d * conversion(from, to)
   end
 
   private

@@ -6,13 +6,14 @@ class ConvertsRatesTest < Minitest::Spec
   test "converts given rates" do
     rates = [{from: :USD, to: :AUD, conversion: 1.4}]
     converter = ConvertsRates.new(rates: rates)
-    assert_equal 1.68, converter.convert(1.2, :USD, :AUD)
+    converter.convert(1.2, :USD, :AUD).must_equal BigDecimal('1.68')
   end
 
   test "converts inverse rates" do
     rates = [{from: :USD, to: :AUD, conversion: 1.4}]
     converter = ConvertsRates.new(rates: rates)
-    assert_equal 0.8571428571428571, converter.convert(1.2, :AUD, :USD)
+    converted = converter.convert(1.2, :AUD, :USD).truncate(3)
+    converted.must_equal BigDecimal('0.857')
   end
 
 end
