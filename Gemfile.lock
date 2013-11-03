@@ -5,6 +5,7 @@ GEM
     minitest (5.0.8)
     nokogiri (1.6.0)
       mini_portile (~> 0.5.0)
+    rake (0.9.6)
 
 PLATFORMS
   ruby
@@ -12,3 +13,4 @@ PLATFORMS
 DEPENDENCIES
   minitest (~> 5)
   nokogiri
+  rake
