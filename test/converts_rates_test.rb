@@ -32,4 +32,15 @@ class ConvertsRatesTest < Minitest::Spec
     converter.convert(1.2, :FOO, :QUX).truncate(3).must_equal BigDecimal('2.059')
   end
 
+  test "no conversion when impossible to derive rates" do
+    rates = [
+      {from: :FOO, to: :BAR, conversion: 1.0},
+      {from: :BAR, to: :BAZ, conversion: 1.0},
+      # missing -> {from: :BAZ, to: :BAT, conversion: 1.0},
+      {from: :BAT, to: :QUX, conversion: 1.0}
+    ]
+    converter = ConvertsRates.new(rates: rates)
+    converter.convert(1.0, :FOO, :QUX).must_equal :no_conversion
+  end
+
 end

@@ -30,34 +30,44 @@ class ConvertsRates
 
   def derive_conversion_rate(rates, from, to, new_rates = [])
     all_rates = rates + new_rates
+    new_rates_count = new_rates.count
     rate = all_rates.find {|rate| rate.converts?(from, to) }
 
     if rate
       [rate, new_rates]
     else
-      froms = all_rates.select {|rate| rate.from == from}
-
+      froms = all_rates.select {|frate| frate.from == from}
       if froms.empty?
-        raise(NoConversion, "no conversion from #{from} to #{to}")
+        raise NoConversion, "no conversion from #{from} to #{to}"
       end
 
       froms.each do |from_rate|
-        tos = all_rates.select {|rate| rate.from == from_rate.to}
-
+        tos = all_rates.select {|trate| trate.from == from_rate.to}
         if tos.empty?
-          raise(NoConversion, "no conversion from #{from} to #{to}")
+          raise NoConversion, "no conversion from #{from} to #{to}"
         end
 
         tos.each do |to_rate|
-          new_rates << Rate.new.set_data({
+          new_rate = Rate.new.set_data({
             from: from_rate.from,
             to: to_rate.to,
             conversion: (from_rate.conversion * to_rate.conversion)
           })
+
+          is_dup = new_rate.from == new_rate.to
+          exists = all_rates.find{|r| new_rate.from == r.from && new_rate.to == r.to }
+
+          if !is_dup && !exists
+            new_rates << new_rate
+          end
         end
       end
 
-      derive_conversion_rate(rates, from, to, new_rates)
+      if new_rates.count > new_rates_count
+        derive_conversion_rate(rates, from, to, new_rates)
+      else
+        raise NoConversion, "no conversion from #{from} to #{to}"
+      end
     end
   end
 
