@@ -21,4 +21,15 @@ class ConvertsRatesTest < Minitest::Spec
     converter.convert(1.2, :FOO, :BAR).must_equal :no_conversion
   end
 
+  test "derives conversion rates" do
+    rates = [
+      {from: :FOO, to: :BAR, conversion: 1.1},
+      {from: :BAR, to: :BAZ, conversion: 1.2},
+      {from: :BAZ, to: :QUX, conversion: 1.3}
+    ]
+    converter = ConvertsRates.new(rates: rates)
+    converter.convert(1.2, :FOO, :BAZ).truncate(3).must_equal BigDecimal('1.584')
+    converter.convert(1.2, :FOO, :QUX).truncate(3).must_equal BigDecimal('2.059')
+  end
+
 end

@@ -10,7 +10,9 @@ class ConvertsRates
   end
 
   def convert(amount, from, to)
-    amount.to_d * conversion_rate(from, to)
+    rate, new_rates = derive_conversion_rate(@rates, from, to)
+    @rates += new_rates if new_rates.any?
+    amount.to_d * rate.conversion
   rescue NoConversion
     :no_conversion
   end
@@ -26,12 +28,37 @@ class ConvertsRates
     end
   end
 
-  def conversion_rate(from, to)
-    rate =
-      @rates.find do |rate|
-        rate.converts?(from, to)
-      end || raise(NoConversion, "no conversion from #{from} to #{to}")
-    rate.conversion
+  def derive_conversion_rate(rates, from, to, new_rates = [])
+    all_rates = rates + new_rates
+    rate = all_rates.find {|rate| rate.converts?(from, to) }
+
+    if rate
+      [rate, new_rates]
+    else
+      froms = all_rates.select {|rate| rate.from == from}
+
+      if froms.empty?
+        raise(NoConversion, "no conversion from #{from} to #{to}")
+      end
+
+      froms.each do |from_rate|
+        tos = all_rates.select {|rate| rate.from == from_rate.to}
+
+        if tos.empty?
+          raise(NoConversion, "no conversion from #{from} to #{to}")
+        end
+
+        tos.each do |to_rate|
+          new_rates << Rate.new.set_data({
+            from: from_rate.from,
+            to: to_rate.to,
+            conversion: (from_rate.conversion * to_rate.conversion)
+          })
+        end
+      end
+
+      derive_conversion_rate(rates, from, to, new_rates)
+    end
   end
 
   Rate = Struct.new(:from, :to, :conversion) do
