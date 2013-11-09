@@ -10,6 +10,7 @@ class ConvertsRates
   end
 
   def convert(amount, from, to)
+    return amount.to_d if from == to
     rate, new_rates = derive_conversion_rate(@rates, from, to)
     @rates += new_rates if new_rates.any?
     amount.to_d * rate.conversion

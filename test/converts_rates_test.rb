@@ -43,4 +43,9 @@ class ConvertsRatesTest < Minitest::Spec
     converter.convert(1.0, :FOO, :QUX).must_equal :no_conversion
   end
 
+  test "noops when converting to the same currency" do
+    converter = ConvertsRates.new(rates: [])
+    converter.convert(1.0, :FOO, :FOO).must_equal BigDecimal('1.0')
+  end
+
 end
