@@ -8,11 +8,14 @@ class FlightSet
   end
 
   def flight_paths(from, to)
-    direct = @flights.select { |f| f.from == from && f.to == to }.map { |d| [d] }
-    direct + connections(from, to)
+    direct(from, to) + connections(from, to)
   end
 
   private
+
+  def direct(from, to)
+    @flights.select { |f| f.from == from && f.to == to }.map { |d| [d] }
+  end
 
   def connections(from, to)
     @flights.select { |f| f.from == from }.reduce([]) do |connections, flight|
