@@ -8,7 +8,7 @@ class FlightSet
   end
 
   def flight_paths(from, to)
-    direct(from, to) + connections(from, to)
+    (direct(from, to) + connections(from, to)).map { |flights| FlightPath.new(flights) }
   end
 
   private
@@ -32,6 +32,16 @@ class FlightSet
       end
       paths.flatten
     end
+  end
+
+end
+
+class FlightPath
+
+  attr_reader :flights
+
+  def initialize(flights)
+    @flights = flights
   end
 
 end

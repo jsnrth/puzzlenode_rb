@@ -13,17 +13,17 @@ class FlightSetTest < Minitest::Spec
   specify "fetches all flight paths" do
     fset = FlightSet.new([ab, ae, az, be, bz, ef])
 
-    paths = fset.flight_paths(:A, :Z)
+    paths = fset.flight_paths(:A, :Z).map(&:flights)
     assert_equal 2, paths.length
     paths.must_include [az]
     paths.must_include [ab, bz]
 
-    paths = fset.flight_paths(:A, :E)
+    paths = fset.flight_paths(:A, :E).map(&:flights)
     assert_equal 2, paths.length
     paths.must_include [ae]
     paths.must_include [ab, be]
 
-    paths = fset.flight_paths(:A, :F)
+    paths = fset.flight_paths(:A, :F).map(&:flights)
     assert_equal 1, paths.length
     paths.must_include [ab, be, ef]
   end
