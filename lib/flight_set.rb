@@ -4,7 +4,7 @@ require 'bigdecimal'
 class FlightSet
 
   def initialize(flights)
-    @flights = flights.map { |flight| flight.set_connections(flights) }
+    @flights = flights.dup
   end
 
   def flight_paths(from, to)
@@ -16,7 +16,7 @@ class FlightSet
 
   def connections(from, to)
     @flights.select { |f| f.from == from }.reduce([]) do |connections, flight|
-      paths = flight.paths_to(to)
+      paths = flight.paths_to(to, @flights)
       connections << paths unless paths.empty?
       connections
     end
@@ -25,8 +25,7 @@ class FlightSet
 end
 
 class Flight
-  attr_reader :from, :to, :depart, :arrive, :price, :connections
-  private :connections
+  attr_reader :from, :to, :depart, :arrive, :price
 
   def initialize(data = {})
     @from = data.fetch(:from) { :no_from }
@@ -34,23 +33,20 @@ class Flight
     @depart = data.fetch(:depart) { :no_depart }
     @arrive = data.fetch(:arrive) { :no_arrive }
     @price = data.fetch(:price) { :no_price }
-    @connections = []
   end
 
-  def set_connections(flights)
-    self.tap do |f|
-      @connections = flights.select { |f2| f.to == f2.from && f.arrive < f2.depart }
-    end
+  def connections(flights)
+    flights.select { |f2| to == f2.from && arrive < f2.depart }
   end
 
-  def connects?(destination)
-    to == destination || connections.any? { |c| c.connects?(destination) }
+  def connects?(destination, flights)
+    to == destination || connections(flights).any? { |c| c.connects?(destination, flights) }
   end
 
-  def paths_to(destination)
-    connections.reduce([]) do |paths, connection|
-      if connection.connects?(destination)
-        paths << ([self, connection] + connection.paths_to(destination)).uniq
+  def paths_to(destination, flights)
+    connections(flights).reduce([]) do |paths, connection|
+      if connection.connects?(destination, flights)
+        paths << ([self, connection] + connection.paths_to(destination, flights)).uniq
       end
       paths.flatten
     end
