@@ -16,9 +16,18 @@ class FlightSet
 
   def connections(from, to)
     @flights.select { |f| f.from == from }.reduce([]) do |connections, flight|
-      paths = flight.paths_to(to, @flights)
+      paths = calculate_paths(flight, to)
       connections << paths unless paths.empty?
       connections
+    end
+  end
+
+  def calculate_paths(flight, destination)
+    flight.connections(@flights).reduce([]) do |paths, connection|
+      if connection.connects?(destination, @flights)
+        paths << ([flight, connection] + calculate_paths(connection, destination)).uniq
+      end
+      paths.flatten
     end
   end
 
@@ -41,15 +50,6 @@ class Flight
 
   def connects?(destination, flights)
     to == destination || connections(flights).any? { |c| c.connects?(destination, flights) }
-  end
-
-  def paths_to(destination, flights)
-    connections(flights).reduce([]) do |paths, connection|
-      if connection.connects?(destination, flights)
-        paths << ([self, connection] + connection.paths_to(destination, flights)).uniq
-      end
-      paths.flatten
-    end
   end
 
 end
