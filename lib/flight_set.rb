@@ -33,15 +33,13 @@ class FlightSet
 
 end
 
-class Flight
-  attr_reader :from, :to, :depart, :arrive, :price
+Flight = Struct.new(:from, :to, :depart, :arrive, :price) do
 
-  def initialize(data = {})
-    @from = data.fetch(:from) { :no_from }
-    @to = data.fetch(:to) { :no_to }
-    @depart = data.fetch(:depart) { :no_depart }
-    @arrive = data.fetch(:arrive) { :no_arrive }
-    @price = data.fetch(:price) { :no_price }
+  def set_data(data = {})
+    members.each do |member|
+      self[member] = data.fetch(member) { :"no_#{member}" }
+    end
+    self
   end
 
   def connections(flights)
