@@ -3,6 +3,8 @@ require 'bigdecimal'
 
 class FlightSet
 
+  attr_reader :flights
+
   def initialize(flights)
     @flights = flights.dup
   end
@@ -18,7 +20,7 @@ class FlightSet
   end
 
   def connections(from, to)
-    @flights.select { |f| f.from == from }.reduce([]) do |connections, flight|
+    flights.select { |f| f.from == from }.reduce([]) do |connections, flight|
       paths = calculate_paths(flight, to)
       connections << paths unless paths.empty?
       connections
@@ -26,8 +28,8 @@ class FlightSet
   end
 
   def calculate_paths(flight, destination)
-    flight.connections(@flights).reduce([]) do |paths, connection|
-      if connection.connects?(destination, @flights)
+    flight.connections(flights).reduce([]) do |paths, connection|
+      if connection.connects?(destination, flights)
         paths << ([flight, connection] + calculate_paths(connection, destination)).uniq
       end
       paths.flatten
