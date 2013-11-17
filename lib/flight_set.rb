@@ -1,6 +1,7 @@
 require 'date'
 require 'bigdecimal'
 require 'flight'
+require 'flight_path'
 
 class FlightSet
 
@@ -35,16 +36,6 @@ class FlightSet
       end
       paths.flatten
     end
-  end
-
-end
-
-class FlightPath
-
-  attr_reader :flights
-
-  def initialize(flights)
-    @flights = flights
   end
 
 end
