@@ -5,8 +5,16 @@ require 'json'
 class Rentals
   PriceEstimate = Struct.new(:name, :price)
 
+  def initialize(rentals)
+    @rentals = rentals
+  end
+
+  def length
+    @rentals.length
+  end
+
   def self.from_json(data)
-    new
+    ParsesData.new(data).parse
   end
 
   def estimate_prices_for_stay(checkin, checkout)
@@ -15,5 +23,15 @@ class Rentals
       PriceEstimate.new("Paradise Inn",      BigDecimal('3508.65')),
       PriceEstimate.new("Honu's Hideaway",   BigDecimal('2233.25')),
     ]
+  end
+
+  class ParsesData
+    def initialize(data)
+      @data = data
+    end
+
+    def parse
+      Rentals.new(@data)
+    end
   end
 end
