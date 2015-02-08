@@ -83,4 +83,24 @@ class RentalsTest < Minitest::Test
     assert_equal BigDecimal('220'), rate
   end
 
+  def test_calculates_estimate_for_date_range
+    checkin   = Date.parse('2011/05/07')
+    checkout  = Date.parse('2011/05/10')
+    estimate = seasonal_rental.estimate_for_date_range(checkin, checkout)
+    assert_equal BigDecimal('509'), estimate
+  end
+
+  def test_calculates_estimate_for_date_over_seasons
+    checkin   = Date.parse('2011/05/12')
+    checkout  = Date.parse('2011/05/17')
+    estimate = seasonal_rental.estimate_for_date_range(checkin, checkout)
+    assert_equal BigDecimal('1032'), estimate
+  end
+
+  def test_calculates_estimate_for_date_range_of_non_seasonal
+    checkin   = Date.parse('2011/05/07')
+    checkout  = Date.parse('2011/05/10')
+    estimate = non_seasonal_rental.estimate_for_date_range(checkin, checkout)
+    assert_equal BigDecimal('870'), estimate
+  end
 end

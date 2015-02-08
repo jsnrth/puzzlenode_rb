@@ -72,6 +72,17 @@ class Rentals
       end
       season.nil? ? :no_season : season.rate
     end
+
+    def estimate_for_date_range(checkin, checkout)
+      rates = rates_for_date_range(checkin, checkout)
+      total_rate = rates.map(&:last).reduce(&:+)
+      case cleaning_fee
+      when Numeric
+        total_rate + cleaning_fee
+      else
+        total_rate
+      end
+    end
   end
 
   Season = Struct.new(:name, :md_range, :rate) do
