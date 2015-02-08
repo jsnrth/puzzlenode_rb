@@ -19,13 +19,13 @@ class ParsesJsonTest < Minitest::Test
     assert_equal 2, fern_grove_lodge.seasons.length
 
     season_one = fern_grove_lodge.seasons.find { |s| s.name == 'one' }
-    assert_equal Rentals::MonthDay.new(5, 1), season_one.start_md
-    assert_equal Rentals::MonthDay.new(5, 13), season_one.end_md
+    assert_equal MonthDay.new(5, 1), season_one.start_md
+    assert_equal MonthDay.new(5, 13), season_one.end_md
     assert_equal BigDecimal('137'), season_one.rate
 
     season_two = fern_grove_lodge.seasons.find { |s| s.name == 'two' }
-    assert_equal Rentals::MonthDay.new(5, 14), season_two.start_md
-    assert_equal Rentals::MonthDay.new(4, 30), season_two.end_md
+    assert_equal MonthDay.new(5, 14), season_two.start_md
+    assert_equal MonthDay.new(4, 30), season_two.end_md
     assert_equal BigDecimal('220'), season_two.rate
 
     assert_equal :seasonal_rates, fern_grove_lodge.rate
@@ -46,13 +46,13 @@ class ParsesJsonTest < Minitest::Test
     assert_equal 2, honus_hideaway.seasons.length
 
     season_one = honus_hideaway.seasons.find { |s| s.name == 'one' }
-    assert_equal Rentals::MonthDay.new(2, 1), season_one.start_md
-    assert_equal Rentals::MonthDay.new(7, 31), season_one.end_md
+    assert_equal MonthDay.new(2, 1), season_one.start_md
+    assert_equal MonthDay.new(7, 31), season_one.end_md
     assert_equal BigDecimal('165'), season_one.rate
 
     season_two = honus_hideaway.seasons.find { |s| s.name == 'two' }
-    assert_equal Rentals::MonthDay.new(8, 1), season_two.start_md
-    assert_equal Rentals::MonthDay.new(1, 31), season_two.end_md
+    assert_equal MonthDay.new(8, 1), season_two.start_md
+    assert_equal MonthDay.new(1, 31), season_two.end_md
     assert_equal BigDecimal('187'), season_two.rate
 
     assert_equal :none, honus_hideaway.cleaning_fee
