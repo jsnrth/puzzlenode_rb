@@ -11,7 +11,9 @@ class AcceptanceTest < Minitest::Test
     checkin   = Date.parse('2011/05/07')
     checkout  = Date.parse('2011/05/20')
 
-    estimates = rentals.estimate_prices_for_stay(checkin, checkout)
+    sales_tax = BigDecimal('0.0411416')
+
+    estimates = rentals.estimate_prices_for_stay(checkin, checkout, sales_tax: sales_tax)
 
     fern_grove_lodge  = estimates.find(:no_estimate) { |e| e.name == "Fern Grove Lodge" }
     paradise_inn      = estimates.find(:no_estimate) { |e| e.name == "Paradise Inn" }

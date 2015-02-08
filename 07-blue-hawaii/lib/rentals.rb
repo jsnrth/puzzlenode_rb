@@ -7,11 +7,8 @@ require 'rental'
 class Rentals
   PriceEstimate = Struct.new(:name, :price)
 
-  TRANSIENT_SALES_TAX = BigDecimal('0.0411416')
-
-  def initialize(rentals, sales_tax: TRANSIENT_SALES_TAX)
+  def initialize(rentals)
     @rentals = rentals
-    @sales_tax = sales_tax
   end
 
   def length
@@ -22,11 +19,11 @@ class Rentals
     Rentals.new(ParsesData.new.parse_json(json))
   end
 
-  def estimate_prices_for_stay(checkin, checkout)
+  def estimate_prices_for_stay(checkin, checkout, sales_tax: BigDecimal('0.0'))
     @rentals.map do |rental|
       PriceEstimate.new(
         rental.name,
-        rental.estimate_for_date_range(checkin, checkout, sales_tax: @sales_tax))
+        rental.estimate_for_date_range(checkin, checkout, sales_tax: sales_tax))
     end
   end
 
