@@ -6,8 +6,11 @@ require 'forwardable'
 class Rentals
   PriceEstimate = Struct.new(:name, :price)
 
-  def initialize(rentals)
+  TRANSIENT_SALES_TAX = BigDecimal('0.0411416')
+
+  def initialize(rentals, sales_tax: TRANSIENT_SALES_TAX)
     @rentals = rentals
+    @sales_tax = sales_tax
   end
 
   def length
@@ -19,11 +22,11 @@ class Rentals
   end
 
   def estimate_prices_for_stay(checkin, checkout)
-    [
-      PriceEstimate.new("Fern Grove Lodge",  BigDecimal('2474.79')),
-      PriceEstimate.new("Paradise Inn",      BigDecimal('3508.65')),
-      PriceEstimate.new("Honu's Hideaway",   BigDecimal('2233.25')),
-    ]
+    @rentals.map do |rental|
+      PriceEstimate.new(
+        rental.name,
+        rental.estimate_for_date_range(checkin, checkout, sales_tax: @sales_tax))
+    end
   end
 
   class ParsesData
@@ -73,7 +76,7 @@ class Rentals
       season.nil? ? :no_season : season.rate
     end
 
-    def estimate_for_date_range(checkin, checkout)
+    def estimate_for_date_range(checkin, checkout, sales_tax: BigDecimal('0.0'))
       rates = rates_for_date_range(checkin, checkout)
       total_rate = rates.map(&:last).reduce(&:+)
       case cleaning_fee
@@ -81,7 +84,7 @@ class Rentals
         total_rate + cleaning_fee
       else
         total_rate
-      end
+      end * (1 + sales_tax)
     end
   end
 
