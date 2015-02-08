@@ -5,8 +5,8 @@ class AcceptanceTest < Minitest::Test
 
   def test_calculates_rates
     data_file = File.expand_path('./test_rentals.json', File.dirname(__FILE__))
-    data    = JSON.parse(File.read(data_file))
-    rentals = Rentals.from_json(data)
+    contents = File.read(data_file)
+    rentals = Rentals.from_json(contents)
 
     checkin   = Date.parse('2011/05/07')
     checkout  = Date.parse('2011/05/20')
