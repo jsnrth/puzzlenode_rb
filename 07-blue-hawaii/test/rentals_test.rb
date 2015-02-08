@@ -1,5 +1,6 @@
 require 'minitest_helper'
 require 'rentals'
+require 'rental'
 
 class RentalsTest < Minitest::Test
 
