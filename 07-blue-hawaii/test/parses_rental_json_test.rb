@@ -28,15 +28,16 @@ class ParsesJsonTest < Minitest::Test
     assert_equal MonthDay.new(4, 30), season_two.end_md
     assert_equal BigDecimal('220'), season_two.rate
 
-    assert_equal :seasonal_rates, fern_grove_lodge.rate
-
     assert_equal BigDecimal('98'), fern_grove_lodge.cleaning_fee
   end
 
   def test_parses_paradise_inn
     paradise_inn = rentals.find { |r| r.name == 'Paradise Inn' }
-    assert_empty paradise_inn.seasons
-    assert_equal BigDecimal('250'), paradise_inn.rate
+    assert_equal 1,  paradise_inn.seasons.length
+    season = paradise_inn.seasons.first
+    assert_equal BigDecimal('250'), season.rate
+    assert_equal MonthDay.new(1, 1), season.start_md
+    assert_equal MonthDay.new(12, 31), season.end_md
     assert_equal BigDecimal('120'), paradise_inn.cleaning_fee
   end
 

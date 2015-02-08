@@ -53,14 +53,22 @@ class Rentals
         }
       }.flatten
       raw_rate = hash.fetch('rate') { nil }
-      rate = raw_rate.nil? ? :seasonal_rates : BigDecimal(raw_rate.to_s.gsub(/\$/, ''))
+      if seasons.empty? && !raw_rate.nil?
+        seasons = [
+          Season.new(
+            'year',
+            MonthDayRange.new(MonthDay.new(1, 1), MonthDay.new(12, 31)),
+            BigDecimal(raw_rate.to_s.gsub(/\$/, '')))
+        ]
+      end
+
       raw_cleanfee = hash.fetch('cleaning fee') { nil }
       cleanfee = raw_cleanfee.nil? ? :none : BigDecimal(raw_cleanfee.to_s.gsub(/\$/, ''))
-      Rental.new(name, seasons, rate, cleanfee)
+      Rental.new(name, seasons, cleanfee)
     end
   end
 
-  Rental = Struct.new(:name, :seasons, :rate, :cleaning_fee) do
+  Rental = Struct.new(:name, :seasons, :cleaning_fee) do
     def rates_for_date_range(checkin, checkout)
       (checkin...checkout).map do |date|
         [date, rate_for_date(date)]
@@ -68,8 +76,6 @@ class Rentals
     end
 
     def rate_for_date(date)
-      return rate if rate.kind_of?(Numeric)
-
       season = seasons.find do |season|
         ranges = season.md_range.date_ranges_for_year(date.year)
         ranges.any? { |range| range.include?(date) }
